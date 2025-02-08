@@ -1,33 +1,58 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { useState, useContext } from "react";
 import { AuthContext } from "./AuthSystem";
 
-const Login = ({ propLoginFunction }) => {
-  const [usernamee, setUsernamee] = useState("");
-  const contextObj = useContext(AuthContext);
+const Login = ({ onLogin: propOnLogin }) => {
+  const [username, setUsername] = useState("");
+  const contextValue = useContext(AuthContext);
 
-  const handleInput = () => {
-    if (contextObj?.username) {
-      contextObj.login(usernamee);
-    } else {
-      propLoginFunction(usernamee);
+  const handleLogin = () => {
+    if (contextValue?.login) {
+      contextValue.login(username);
+    } else if (propOnLogin) {
+      propOnLogin(username);
     }
-    setUsernamee("");
+    setUsername("");
   };
 
   return (
-    <div>
-      <div>
-        <label htmlFor="username">Username</label>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1rem",
+        maxWidth: "300px",
+        margin: "0 auto",
+      }}
+    >
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <label htmlFor="username" style={{ fontWeight: "bold" }}>
+          Username
+        </label>
         <input
-          type="text"
-          name="username"
-          value={usernamee}
-          onChange={(e) => {
-            setUsernamee(e.target.value);
+          id="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Enter your username"
+          style={{
+            padding: "0.5rem",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
           }}
-        ></input>
-        <button onClick={handleInput}>Login</button>
+        />
       </div>
+      <button
+        onClick={handleLogin}
+        style={{
+          backgroundColor: "#3f98b5",
+          color: "white",
+          border: "none",
+          padding: "0.5rem 1rem",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
+        Login
+      </button>
     </div>
   );
 };

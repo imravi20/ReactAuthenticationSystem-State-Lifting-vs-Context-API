@@ -1,55 +1,60 @@
-import React, { useContext, createContext, useState } from "react";
-import AppBar from "./AppBar";
+import React, { createContext, useState, useContext } from "react";
 import Home from "./Home";
+import AppBar from "./AppBar";
 import Login from "./Login";
 
 export const AuthContext = createContext(undefined);
 
-const AuthSystem = () => {
+export default function AuthSystem() {
   const [useContextApi, setUseContextApi] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  function login(usernamee) {
-    setUsername(usernamee);
-    setLoggedIn(true);
-  }
-  function logout() {
+  const login = (newUsername) => {
+    setUsername(newUsername);
+    setIsLoggedIn(true);
+  };
+
+  const logout = () => {
     setUsername("");
-    setLoggedIn(false);
-  }
+    setIsLoggedIn(false);
+  };
 
-  const contextobj = useContextApi
-    ? { username, loggedIn, login, logout }
+  const contextValue = useContextApi
+    ? { username, isLoggedIn, login, logout }
     : undefined;
 
   return (
-    <AuthContext.Provider value={contextobj}>
-      <div>
-        <AppBar
-          propLoggedIn={loggedIn}
-          propUsername={username}
-          propLoggedOut={logout}
-        />
-      </div>
-
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <input
-          id="useContextApi"
-          type="checkbox"
-          checked={useContextApi}
-          onChange={(e) => {
-            setUseContextApi(e.target.checked);
+    <AuthContext.Provider value={contextValue}>
+      <div
+        style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+      >
+        <AppBar username={username} isLoggedIn={isLoggedIn} logout={logout} />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            padding: "1rem",
+            backgroundColor: "#f0f0f0",
           }}
-        ></input>
-        <label htmlFor="useContextApi">
-          Use Context Api: {useContextApi ? "On" : "Off"}
-        </label>
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <input
+              id="use-context-api"
+              type="checkbox"
+              checked={useContextApi}
+              onChange={(e) => setUseContextApi(e.target.checked)}
+            />
+            <label htmlFor="use-context-api">
+              Use Context API: {useContextApi ? "On" : "Off"}
+            </label>
+          </div>
+        </div>
+        <main style={{ flex: 1, padding: "1rem" }}>
+          {isLoggedIn ? <Home /> : <Login onLogin={login} />}
+        </main>
       </div>
-
-      <div>{loggedIn ? <Home /> : <Login propLoginFunction={login} />}</div>
     </AuthContext.Provider>
   );
-};
-
-export default AuthSystem;
+}
